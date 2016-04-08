@@ -14,6 +14,7 @@ if (MXQ_ROOT)
 endif ()
 
 add_subdirectory(src)
+add_subdirectory(test)
 
 install (FILES include/list.h DESTINATION include)
 install (FILES include/mxq.h DESTINATION include)
