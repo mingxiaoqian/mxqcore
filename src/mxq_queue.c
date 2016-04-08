@@ -58,7 +58,7 @@ struct mxq_queue_node *__new_node(Item item)
 	return node;
 }
 
-static int __mxq_queue_put(Queue q, Item item)
+static int __mxq_queue_push_back(Queue q, Item item)
 {
 	struct mxq_queue_node *node;
 
@@ -72,7 +72,7 @@ static int __mxq_queue_put(Queue q, Item item)
 	return 0;
 }
 
-static Item __mxq_queue_get(Queue q)
+static Item __mxq_queue_pop(Queue q)
 {
 	struct mxq_queue_node *head;
 	Item item;
@@ -90,27 +90,27 @@ static Item __mxq_queue_get(Queue q)
 	return item;
 }
 
-int mxq_queue_put(Queue q, Item item)
+int mxq_queue_push_back(Queue q, Item item)
 {
 	int ret;
 
 	assert(q);
 
 	pthread_mutex_lock(&q->lock);
-	ret = __mxq_queue_put(q, item);
+	ret = __mxq_queue_push_back(q, item);
 	pthread_mutex_unlock(&q->lock);
 
 	return ret;
 }
 
-Item mxq_queue_get(Queue q)
+Item mxq_queue_pop(Queue q)
 {
 	Item item;
 
 	assert(q);
 
 	pthread_mutex_lock(&q->lock);
-	item = __mxq_queue_get(q);
+	item = __mxq_queue_pop(q);
 	pthread_mutex_unlock(&q->lock);
 
 	return item;
@@ -130,7 +130,7 @@ void mxq_queue_destroy(Queue q)
 
 	pthread_mutex_lock(&q->lock);
 	while (!mxq_queue_empty(q))
-		__mxq_queue_get(q);
+		__mxq_queue_pop(q);
 	pthread_mutex_unlock(&q->lock);
 
 	pthread_mutex_destroy(&q->lock);
