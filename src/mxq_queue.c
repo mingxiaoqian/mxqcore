@@ -112,18 +112,21 @@ Item mxq_queue_pop(Queue q)
 	return item;
 }
 
-static void __mxq_queue_clear(Queue q)
+static void __mxq_queue_clear(Queue q, cleanup_item cleanup)
 {
-	while (!mxq_queue_empty(q))
-		__mxq_queue_pop(q);
+	while (!mxq_queue_empty(q)) {
+		Item item = __mxq_queue_pop(q);
+		if (cleanup)
+			cleanup(item);
+	}
 }
 
-void mxq_queue_clear(Queue q)
+void mxq_queue_clear(Queue q, cleanup_item cleanup)
 {
 	assert(q);
 
 	pthread_mutex_lock(&q->lock);
-	__mxq_queue_clear(q);
+	__mxq_queue_clear(q, cleanup);
 	pthread_mutex_unlock(&q->lock);
 }
 
@@ -132,7 +135,7 @@ void mxq_queue_destroy(Queue q)
 	if (!q)
 		return;
 
-	mxq_queue_clear(q);
+	mxq_queue_clear(q, NULL);
 
 	pthread_mutex_destroy(&q->lock);
 	MXQ_SAFE_DELETE(q);

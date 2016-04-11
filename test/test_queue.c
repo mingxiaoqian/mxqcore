@@ -59,7 +59,7 @@ static int test_pointor()
 	}
 	*/
 	list_queue(q, func_point);
-	mxq_queue_clear(q);
+	mxq_queue_clear(q, NULL);
 
 	mxq_queue_destroy(q);
 	q = NULL;
