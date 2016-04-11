@@ -17,7 +17,23 @@ void mxq_queue_destroy(Queue q);
 int mxq_queue_empty(Queue q);
 int mxq_queue_push_back(Queue q, Item item);
 Item mxq_queue_pop(Queue q);
+void mxq_queue_clear(Queue q);
+
+int mxq_queue_lock(Queue q);
+int mxq_queue_unlock(Queue q);
 int mxq_queue_count(Queue q);
+Item mxq_queue_enumerate(Queue q, int index);
+
+#define list_queue(q, func, arg...) \
+	do {\
+		int i;\
+		mxq_queue_lock(q);\
+		for (i = 0; i < mxq_queue_count(q); i++) {\
+			Item item = mxq_queue_enumerate(q, i);\
+			func(item, ##arg);\
+		}\
+		mxq_queue_unlock(q);\
+	} while (0)
 
 #endif
 

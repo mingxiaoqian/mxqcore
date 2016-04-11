@@ -21,7 +21,6 @@ struct mxq_queue_node {
 };
 
 struct mxq_queue {
-	int count;
 	struct list_head queue;
 	pthread_mutex_t lock;
 };
@@ -34,7 +33,6 @@ Queue mxq_queue_init()
 	if (q) {
 		pthread_mutex_init(&q->lock, NULL);
 		INIT_LIST_HEAD(&q->queue);
-		q->count = 0;
 	}
 
 	return q;
@@ -67,7 +65,6 @@ static int __mxq_queue_push_back(Queue q, Item item)
 		return -1;
 	}
 	list_add_tail(&node->list, &q->queue);
-	q->count++;
 
 	return 0;
 }
@@ -80,7 +77,6 @@ static Item __mxq_queue_pop(Queue q)
 	if (mxq_queue_empty(q))
 		return NULL;
 
-	q->count--;
 	head = list_first_entry(&q->queue, struct mxq_queue_node, list);
 	list_del_init(&head->list);
 
@@ -116,11 +112,19 @@ Item mxq_queue_pop(Queue q)
 	return item;
 }
 
-int mxq_queue_count(Queue q)
+static void __mxq_queue_clear(Queue q)
+{
+	while (!mxq_queue_empty(q))
+		__mxq_queue_pop(q);
+}
+
+void mxq_queue_clear(Queue q)
 {
 	assert(q);
 
-	return q->count;
+	pthread_mutex_lock(&q->lock);
+	__mxq_queue_clear(q);
+	pthread_mutex_unlock(&q->lock);
 }
 
 void mxq_queue_destroy(Queue q)
@@ -128,12 +132,65 @@ void mxq_queue_destroy(Queue q)
 	if (!q)
 		return;
 
-	pthread_mutex_lock(&q->lock);
-	while (!mxq_queue_empty(q))
-		__mxq_queue_pop(q);
-	pthread_mutex_unlock(&q->lock);
+	mxq_queue_clear(q);
 
 	pthread_mutex_destroy(&q->lock);
 	MXQ_SAFE_DELETE(q);
 }
+
+int mxq_queue_lock(Queue q)
+{
+	assert(q);
+
+	return pthread_mutex_lock(&q->lock);
+}
+
+int mxq_queue_unlock(Queue q)
+{
+	assert(q);
+
+	return pthread_mutex_unlock(&q->lock);
+}
+
+static int __mxq_queue_count(Queue q)
+{
+	int count = 0;
+	struct mxq_queue_node *node;
+
+	list_for_each_entry(node, &q->queue, list)
+		count++;
+
+	return count;
+}
+
+int mxq_queue_count(Queue q)
+{
+	assert(q);
+
+	return __mxq_queue_count(q);
+}
+
+static Item __mxq_queue_enumerate(Queue q, int index)
+{
+	int i = 0;
+	struct mxq_queue_node *node;
+
+	if (index < 0)
+		return NULL;
+
+	list_for_each_entry(node, &q->queue, list) {
+		if (i++ == index)
+			return node->item;
+	}
+
+	return NULL;
+}
+
+Item mxq_queue_enumerate(Queue q, int index)
+{
+	assert(q);
+
+	return __mxq_queue_enumerate(q, index);
+}
+
 

@@ -32,6 +32,13 @@ struct test_point {
 	int y;
 };
 
+int func_point(struct test_point *point)
+{
+	printf("(%d, %d)\n", point->x, point->y);
+
+	return 0;
+}
+
 static int test_pointor()
 {
 	struct test_point points[10];
@@ -45,10 +52,14 @@ static int test_pointor()
 		mxq_queue_push_back(q, (Item)point);
 	}
 
+	/*
 	while (!mxq_queue_empty(q)) {
 		struct test_point *point = mxq_queue_pop(q);
 		printf("(%d, %d)\n", point->x, point->y);
 	}
+	*/
+	list_queue(q, func_point);
+	mxq_queue_clear(q);
 
 	mxq_queue_destroy(q);
 	q = NULL;

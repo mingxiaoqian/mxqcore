@@ -4,4 +4,5 @@ cscope.out
 cscope.po.out
 tags
 .DS_Store
+*.swp
 build
