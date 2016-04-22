@@ -79,8 +79,10 @@ void *thread_run(void *arg)
 		task = mxq_queue_pop(pool->tasks);
 		pthread_mutex_unlock(&pool->lock);
 
-		task->handle(task->args);
-		MXQ_SAFE_DELETE(task);
+		if (task) {
+			task->handle(task->args);
+			MXQ_SAFE_DELETE(task);
+		}
 	}
 
 	return NULL;
