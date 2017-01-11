@@ -23,7 +23,6 @@
 #define MXQ_PTHREADPOOL_SIZE_MAX		64
 #endif
 
-
 struct mxq_pthreadpool {
 	pthread_mutex_t lock;
 	pthread_cond_t cond;
@@ -113,7 +112,7 @@ PthreadPool mxq_pthreadpool_init(int number)
 
 	for (i = 0; i < number; i++) {
 		pthread_t th;
-		if (!pthread_create(&th, NULL, thread_run, (void*)pool))
+		if (!pthread_create(&th, NULL, thread_run, (void *)pool))
 			mxq_queue_push_back(pool->workers, th);
 	}
 
@@ -156,7 +155,7 @@ void mxq_pthreadpool_destroy(PthreadPool pool)
 	mxq_queue_destroy(pool->workers);
 	pool->workers = NULL;
 
-	mxq_queue_clear(pool->tasks, (cleanup_item)__delete_task);
+	mxq_queue_clear(pool->tasks, (cleanup_item) __delete_task);
 	mxq_queue_destroy(pool->tasks);
 	pool->tasks = NULL;
 
@@ -199,4 +198,3 @@ int mxq_task_count(PthreadPool pool)
 
 	return mxq_queue_count(pool->tasks);
 }
-

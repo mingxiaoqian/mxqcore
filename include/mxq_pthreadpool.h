@@ -9,7 +9,7 @@
 #define _INCLUDE_MXQ_PTHREADPOOL_H
 
 typedef struct mxq_pthreadpool *PthreadPool;
-typedef void *(*task_handle)(void *);
+typedef void *(*task_handle) (void *);
 
 PthreadPool mxq_pthreadpool_init(int number);
 void mxq_pthreadpool_destroy(PthreadPool pool);
@@ -19,4 +19,3 @@ int mxq_thread_count(PthreadPool pool);
 int mxq_task_count(PthreadPool pool);
 
 #endif
-

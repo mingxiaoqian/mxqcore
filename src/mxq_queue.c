@@ -160,8 +160,9 @@ static int __mxq_queue_count(Queue q)
 	int count = 0;
 	struct mxq_queue_node *node;
 
-	list_for_each_entry(node, &q->queue, list)
+	list_for_each_entry(node, &q->queue, list) {
 		count++;
+	}
 
 	return count;
 }
@@ -195,5 +196,3 @@ Item mxq_queue_enumerate(Queue q, int index)
 
 	return __mxq_queue_enumerate(q, index);
 }
-
-

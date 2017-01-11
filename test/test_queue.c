@@ -16,7 +16,7 @@ static int test()
 	int i;
 
 	for (i = 0; i < 100; i++)
-		mxq_queue_push_back(q, (Item)i);
+		mxq_queue_push_back(q, (Item) i);
 
 	while (!mxq_queue_empty(q))
 		printf("%d\n", (int)mxq_queue_pop(q));
@@ -49,15 +49,15 @@ static int test_pointor()
 		struct test_point *point = points + i;
 		point->x = (i + 1);
 		point->y = point->x * point->x;
-		mxq_queue_push_back(q, (Item)point);
+		mxq_queue_push_back(q, (Item) point);
 	}
 
 	/*
-	while (!mxq_queue_empty(q)) {
-		struct test_point *point = mxq_queue_pop(q);
-		printf("(%d, %d)\n", point->x, point->y);
-	}
-	*/
+	   while (!mxq_queue_empty(q)) {
+	   struct test_point *point = mxq_queue_pop(q);
+	   printf("(%d, %d)\n", point->x, point->y);
+	   }
+	 */
 	list_queue(q, func_point);
 	mxq_queue_clear(q, NULL);
 
@@ -74,4 +74,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-

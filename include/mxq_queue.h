@@ -12,7 +12,7 @@ typedef void *Item;
 
 typedef struct mxq_queue *Queue;
 
-typedef void (*cleanup_item)(Item item);
+typedef void (*cleanup_item) (Item item);
 
 Queue mxq_queue_init();
 void mxq_queue_destroy(Queue q);
@@ -38,4 +38,3 @@ Item mxq_queue_enumerate(Queue q, int index);
 	} while (0)
 
 #endif
-
